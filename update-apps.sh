@@ -359,10 +359,11 @@ main() {
     test_connection
     
     # Get installed apps
-    local apps_response=$(get_apps)
+    echo -e "${BLUE}Fetching installed applications...${NC}"
+    local apps_response=$(api_call "GET" "app")
     
-    if [[ -z "$apps_response" ]]; then
-        echo -e "${RED}No apps response received${NC}"
+    if [[ $? -ne 0 ]] || [[ -z "$apps_response" ]]; then
+        echo -e "${RED}Error: Failed to fetch applications${NC}"
         exit 1
     fi
     
