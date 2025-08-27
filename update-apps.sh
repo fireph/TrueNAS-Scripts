@@ -412,7 +412,7 @@ main() {
             update_available=$(echo "$app" | jq -r '.upgrade_available')
         fi
 
-        echo -e "${YELLOW}$app update available is $update_available.${NC}"
+        echo -e "${YELLOW}$app_id update available is $update_available.${NC}"
         echo ""
 
         # Special handling for Plex
