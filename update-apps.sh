@@ -427,9 +427,16 @@ main() {
             fi
         fi
         
+        # Skip apps that are stopped
+        if [[ "$state" == "STOPPED" ]]; then
+            echo -e "${YELLOW}Skipping $app_name - app is stopped${NC}"
+            echo ""
+            continue
+        fi
+        
         # Check if app is in a state where it can be updated
-        if [[ "$state" != "RUNNING" && "$state" != "STOPPED" && "$FORCE_UPDATE" != "true" ]]; then
-            echo -e "${YELLOW}Skipping $app_name - not in RUNNING or STOPPED state (Current: $state)${NC}"
+        if [[ "$state" != "RUNNING" && "$FORCE_UPDATE" != "true" ]]; then
+            echo -e "${YELLOW}Skipping $app_name - not in RUNNING state (Current: $state)${NC}"
             echo "Use --force to update anyway"
             echo ""
             continue
