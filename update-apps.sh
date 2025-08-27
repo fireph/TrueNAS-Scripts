@@ -366,8 +366,19 @@ main() {
         exit 1
     fi
     
+    # Debug: Show first 200 characters of response
+    echo -e "${BLUE}API Response (first 200 chars): ${NC}"
+    echo "$apps_response" | head -c 200
+    echo ""
+    
     # Parse apps and check for updates
-    local app_count=$(echo "$apps_response" | jq '. | length')
+    local app_count=$(echo "$apps_response" | jq '. | length' 2>/dev/null)
+    
+    if [[ -z "$app_count" || "$app_count" == "null" ]]; then
+        echo -e "${RED}Error: Could not parse app count from API response${NC}"
+        echo "This might indicate an API endpoint change or authentication issue"
+        exit 1
+    fi
     
     if [[ "$app_count" == "0" ]]; then
         echo -e "${YELLOW}No applications found${NC}"
