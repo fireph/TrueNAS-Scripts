@@ -412,13 +412,8 @@ main() {
             update_available=$(echo "$app" | jq -r '.upgrade_available')
         fi
 
-        if $update_available; then
-            echo -e "${YELLOW}Update found for $app_name.${NC}"
-            echo ""
-        fi
-
         # Special handling for Plex
-        if [[ "$app_id" == "plex" ]]; then
+        if [[ "$update_available" == "true" ]] && [[ "$app_id" == "plex" ]]; then
             echo -e "${BLUE}Detected Plex app - checking for active sessions...${NC}"
             
             if ! check_plex_sessions; then
