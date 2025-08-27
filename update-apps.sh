@@ -271,6 +271,7 @@ check_plex_sessions() {
     fi
     
     echo -e "${BLUE}Checking Plex active sessions...${NC}"
+    echo -e "${BLUE}Plex URL: http://$PLEX_HOST:$PLEX_PORT/status/sessions${NC}"
     
     local sessions_url="http://$PLEX_HOST:$PLEX_PORT/status/sessions?X-Plex-Token=$PLEX_TOKEN"
     local response=$(curl -s -H "Accept: application/json" "$sessions_url" 2>/dev/null)
@@ -280,6 +281,11 @@ check_plex_sessions() {
         echo "Make sure Plex is running and accessible"
         return 1
     fi
+    
+    # Debug: Show first 200 characters of Plex response
+    echo -e "${BLUE}Plex Response (first 200 chars): ${NC}"
+    echo "$response" | head -c 200
+    echo ""
     
     # Parse JSON response to count active sessions
     local session_count=0
@@ -402,7 +408,7 @@ main() {
         echo -e "${BLUE}Processing: $app_name (ID: $app_id, State: $state)${NC}"
         
         # Special handling for Plex
-        if [[ "$app_name" == *"plex"* ]] || [[ "$app_id" == *"plex"* ]]; then
+        if [[ "$app_id" == "plex" ]]; then
             echo -e "${BLUE}Detected Plex app - checking for active sessions...${NC}"
             
             if ! check_plex_sessions; then
