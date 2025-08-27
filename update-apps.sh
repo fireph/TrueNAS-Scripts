@@ -413,6 +413,7 @@ main() {
         fi
 
         echo -e "${YELLOW}$app update available is $update_available.${NC}"
+        echo ""
 
         # Special handling for Plex
         if [[ "$update_available" == "true" ]] && [[ "$app_id" == "plex" ]]; then
