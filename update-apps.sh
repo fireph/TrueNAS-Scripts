@@ -407,6 +407,9 @@ main() {
         
         echo -e "${BLUE}Processing: $app_name (ID: $app_id, State: $state)${NC}"
         
+        # Debug: Show state comparison
+        echo -e "${BLUE}Debug: Checking if '$state' == 'STOPPED'${NC}"
+        
         # Special handling for Plex
         if [[ "$app_id" == "plex" ]]; then
             echo -e "${BLUE}Detected Plex app - checking for active sessions...${NC}"
