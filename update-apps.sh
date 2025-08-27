@@ -282,11 +282,6 @@ check_plex_sessions() {
         return 1
     fi
     
-    # Debug: Show first 200 characters of Plex response
-    echo -e "${BLUE}Plex Response (first 200 chars): ${NC}"
-    echo "$response" | head -c 200
-    echo ""
-    
     # Parse JSON response to count active sessions
     local session_count=0
     
@@ -373,11 +368,6 @@ main() {
         exit 1
     fi
     
-    # Debug: Show first 200 characters of response
-    echo -e "${BLUE}API Response (first 200 chars): ${NC}"
-    echo "$apps_response" | head -c 200
-    echo ""
-    
     # Parse apps and check for updates
     local app_count=$(echo "$apps_response" | jq '. | length' 2>/dev/null)
     
@@ -407,9 +397,21 @@ main() {
         
         echo -e "${BLUE}Processing: $app_name (ID: $app_id, State: $state)${NC}"
         
-        # Debug: Show state comparison
-        echo -e "${BLUE}Debug: Checking if '$state' == 'STOPPED'${NC}"
+        # Check if app is in a state where it can be updated
+        if [[ "$state" != "RUNNING" ]]; then
+            echo -e "${YELLOW}Skipping $app_name - not in RUNNING state (Current: $state)${NC}"
+            echo ""
+            continue
+        fi
         
+        # Check if update is available (this may not be reliable in all TrueNAS versions)
+        local update_available="false"
+        if echo "$app" | jq -e '.update_available' >/dev/null 2>&1; then
+            update_available=$(echo "$app" | jq -r '.update_available')
+        elif echo "$app" | jq -e '.upgrade_available' >/dev/null 2>&1; then
+            update_available=$(echo "$app" | jq -r '.upgrade_available')
+        fi
+
         # Special handling for Plex
         if [[ "$app_id" == "plex" ]]; then
             echo -e "${BLUE}Detected Plex app - checking for active sessions...${NC}"
@@ -428,29 +430,6 @@ main() {
             else
                 echo -e "${GREEN}No active Plex sessions - safe to update${NC}"
             fi
-        fi
-        
-        # Skip apps that are stopped
-        if [[ "$state" == "STOPPED" ]]; then
-            echo -e "${YELLOW}Skipping $app_name - app is stopped${NC}"
-            echo ""
-            continue
-        fi
-        
-        # Check if app is in a state where it can be updated
-        if [[ "$state" != "RUNNING" && "$FORCE_UPDATE" != "true" ]]; then
-            echo -e "${YELLOW}Skipping $app_name - not in RUNNING state (Current: $state)${NC}"
-            echo "Use --force to update anyway"
-            echo ""
-            continue
-        fi
-        
-        # Check if update is available (this may not be reliable in all TrueNAS versions)
-        local update_available="false"
-        if echo "$app" | jq -e '.update_available' >/dev/null 2>&1; then
-            update_available=$(echo "$app" | jq -r '.update_available')
-        elif echo "$app" | jq -e '.upgrade_available' >/dev/null 2>&1; then
-            update_available=$(echo "$app" | jq -r '.upgrade_available')
         fi
         
         if [[ "$update_available" == "true" || "$FORCE_UPDATE" == "true" ]]; then
