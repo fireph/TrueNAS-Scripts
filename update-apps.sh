@@ -31,12 +31,17 @@ usage() {
     echo "  -d, --dry-run        Show what would be updated without actually updating"
     echo "  -f, --force          Force update even if no updates appear available"
     echo "  -w, --wait           Wait for each update to complete before starting the next"
+    echo "  -t, --plex-token     Plex authentication token for session checking"
+    echo "  --plex-host HOST     Override Plex server IP"
+    echo "  --plex-port PORT     Override Plex server port (default: 32400)"
+    echo "  --skip-plex-check    Skip Plex session detection entirely"
     echo "  --help               Show this help message"
     echo ""
     echo "Examples:"
     echo "  $0 --api-key your-api-key-here"
     echo "  $0 --username root --password yourpassword"
     echo "  $0 --host 192.168.1.100 --api-key your-key --dry-run"
+    echo "  $0 --api-key your-key --plex-token your-plex-token --force"
 }
 
 # Parse command line arguments

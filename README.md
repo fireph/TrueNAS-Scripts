@@ -26,7 +26,10 @@ chmod +x update-apps.sh
 - `--dry-run` - Preview updates without executing
 - `--force` - Update even with active Plex sessions  
 - `--wait` - Wait for each update to complete
-- `--skip-plex-check` - Disable Plex session detection
+- `--plex-token TOKEN` - Plex authentication token for session checking
+- `--plex-host HOST` - Override Plex server IP
+- `--plex-port PORT` - Override Plex server port (default: 32400)
+- `--skip-plex-check` - Disable Plex session detection entirely
 
 #### Setup
 
