@@ -47,7 +47,6 @@ apk add --no-cache libnatpmp curl
 
         response_body=$(cat "$temp_body")
 
-        # String comparison is safer here in case curl fails entirely
         if [[ "$http_status" != "200" ]]; then
           echo "[ProtonVPN Port-Forward] qBittorrent port:$port_tcp update failed! ($http_status): $response_body"
         else
