@@ -5,11 +5,6 @@ apk add --no-cache libnatpmp curl
 
 # Run the port-forwarding loop in the background so it doesn't block container startup
 (
-  echo "[ProtonVPN Port-Forward] Waiting for WireGuard (wg-US-CA-474) to connect..."
-  while ! ip link show wg-US-CA-474 > /dev/null 2>&1; do
-    sleep 5
-  done
-
   ui_port="8080"
   gateway="10.2.0.1"
   prev_port="0"
@@ -17,6 +12,16 @@ apk add --no-cache libnatpmp curl
   temp_body="/tmp/qbit_response.txt"
   natpmpc_fails=0
   num_re='^[0-9]+$'
+
+  echo "[ProtonVPN Port-Forward] Waiting for WireGuard (wg-US-CA-474) to connect..."
+  while ! ip link show wg-US-CA-474 > /dev/null 2>&1; do
+    sleep 5
+  done
+
+  echo "[ProtonVPN Port-Forward] Waiting for qBittorrent WebUI..."
+  while ! curl -s http://localhost:$ui_port > /dev/null; do
+    sleep 5
+  done
 
   while true; do
     # Request port mapping for UDP and TCP
@@ -46,6 +51,8 @@ apk add --no-cache libnatpmp curl
             -d "json={\"listen_port\": $port_tcp}")
 
         response_body=$(cat "$temp_body")
+
+        rm "$temp_body"
 
         if [[ "$http_status" != "200" ]]; then
           echo "[ProtonVPN Port-Forward] qBittorrent port:$port_tcp update failed! ($http_status): $response_body"
